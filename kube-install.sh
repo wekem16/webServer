@@ -33,13 +33,12 @@ sudo apt-get update
 sudo apt-get install containerd.io
 
 sudo mkdir -p /etc/containerd
-containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+sudo containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
 sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 sudo sed -i 's/sandbox_image = "registry.k8s.io\/pause:3.*"/sandbox_image = "registry.k8s.io\/pause:3.9"/g' /etc/containerd/config.toml
 
 sudo systemctl restart containerd
 sudo systemctl enable containerd
-systemctl status containerd
 
 echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
 sudo sh -c "echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf"
@@ -59,6 +58,9 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 -------------------------------------------------------------------------------------------------
 
-sudo 
+sudo kubeadm init --apiserver-advertise-address=172.31.16.124   --pod-network-cidr=10.244.0.0/16
 
 wget https://github.com/weaveworks/weave/releases/download/v2.6.0/weave-daemonset-k8s-1.11.yaml
+
+
+sed -i 's~rbac.authorization.k8s.io/v1beta1~rbac.authorization.k8s.io/v1~g'
